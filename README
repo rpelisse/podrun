@@ -1,0 +1,4 @@
+ReadMe
+====
+
+A couple of handy scripts to help fire (and delete) a podman container, running with systemd and Ansible, to quickly test playbooks.
