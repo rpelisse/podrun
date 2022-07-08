@@ -1,6 +1,6 @@
 #!/bin/bash
-readonly CONTAINER_IMAGE=${CONTAINER_IMAGE:-'localhost/ubi8-ansible'}
-readonly CONTAINER_NAME=${1:-$(basename $(pwd) | sed -e 's;.git;;g')}
+readonly PODRUN_CONTAINER_IMAGE=${PODRUN_CONTAINER_IMAGE:-'localhost/ubi8-ansible'}
+readonly PODRUN_CONTAINER_NAME=${1:-$(basename $(pwd) | sed -e 's;.git;;g')}
 
 readonly INVENTORY_FILE=${2:-'inventory/localhost'}
 readonly ROOT_CMD=${ROOT_CMD:-"/usr/sbin/init"}
@@ -36,11 +36,12 @@ add_port_bindings() {
   fi
 }
 
-if [ ! "$(podman ps -q -f name=${CONTAINER_NAME})" ]; then
+if [ ! "$(podman ps -q -f name=${PODRUN_CONTAINER_NAME})" ]; then
   podman run -dit --systemd=true --privileged=true  \
-       --rm --name "${CONTAINER_NAME}" --workdir /work -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $(pwd):/work:rw \
+       --rm --name "${PODRUN_CONTAINER_NAME}" --workdir /work \
+       -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $(pwd):/work:rw $(add_extra_volumes) \
        $(add_inventory_to_hosts) $(add_port_bindings) \
-       "${CONTAINER_IMAGE}" \
+       "${PODRUN_CONTAINER_IMAGE}" \
        "${ROOT_CMD}"
 fi
-podman exec -ti "${CONTAINER_NAME}" /bin/bash
+podman exec -ti "${PODRUN_CONTAINER_NAME}" /bin/bash
