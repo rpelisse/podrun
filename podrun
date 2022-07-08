@@ -24,6 +24,12 @@ add_inventory_to_hosts() {
   fi
 }
 
+add_extra_volumes() {
+  if [ -n "${PODRUN_EXTRA_VOLUMES}" ]; then
+    echo "${PODRUN_EXTRA_VOLUMES}"
+  fi
+}
+
 add_port_bindings() {
   if [ -n "${PORTS_BINDING}" ]; then
     echo -p 8080:8080 -p 9990:9990
